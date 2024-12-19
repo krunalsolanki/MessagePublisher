@@ -1,0 +1,40 @@
+using System.Data.Common;
+using Azure.Messaging.ServiceBus;
+
+namespace MessagePublisher {
+
+public class program{
+
+const string connestring =default!;
+const string queue = "";
+static ServiceBusClient client = default!;
+static ServiceBusSender sender = default!;
+public static async Task Main(string arg[])
+
+{
+client= new ServiceBusClient(connestring);
+
+sender = client.CreateSender(queue);
+
+//single message 
+await sender.SendMessageAsync(new ServiceBusMessage("Hello"));
+
+// batch messacge
+ServiceBusMessageBatch batch  =await sender.CreateMessageBatchAsync();
+try{
+batch.TryAddMessage(new ServiceBusMessage("hellow"));
+
+
+await sender.SendMessagesAsync(batch);
+
+}
+finally{
+    await sender.DisposeAsync();
+   await client.DisposeAsync();
+}
+
+}
+
+}
+
+}
